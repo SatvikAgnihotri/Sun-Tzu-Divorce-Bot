@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
+    <title>Sun Tzu Divorce Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 30px auto; /* Center the container */
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 5px;
+            vertical-align: center;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+      
+        h4 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 300px;
+            overflow-y: scroll;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        .chat-box {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-message,
+        .bot-message {
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin: 5px 0;
+            max-width: 80%;
+        }
+
+        .user-message {
+            align-self: flex-end;
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .bot-message {
+            align-self: flex-start;
+            background-color: #f0f0f0;
+        }
+
+        .user-input {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        #userInput {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px 0 0 5px;
+        }
+
+        #sendButton {
+            padding: 10px 20px;
+            border: none;
+            background-color: #007bff;
+            color: #fff;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <h1>Ask Sun-Tzu to Solve Your Divorce Problems</h1>
+        <div class="chat-container" id="chatBox"></div>
+        <div class="user-input">
+            <input type="text" id="userInput" placeholder="Sun Tzu, my wife cooks terrible food. What should I do?...">
+            <button id="sendButton">Send</button>
+        </div>
+    </div>
+<script>
+    // Function to send user input to the Flask backend and get the response
+    async function sendUserInput() {
+        const userInput = document.getElementById("userInput").value;
+        const history = "history";  // Replace this with your actual history data if required
+
+        const requestData = {
+            question: userInput,
+            history: history,
+            secret: "password" 
+        };
+
+        const chatBox = document.getElementById("chatBox");
+        const userMessage = document.createElement("div");
+        userMessage.className = "user-message";
+        userMessage.textContent = "Trasmitting Message to Sun Tzu...";
+        chatBox.appendChild(userMessage);
+
+        try {
+            const response = await fetch("/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(requestData)
+            });
+
+            if (!response.ok) {
+                throw new Error("Error fetching chatbot response.");
+            }
+
+            const responseData = await response.json();
+
+            // Update the UI with the received answer from the chatbot
+            userMessage.textContent = "You: " + userInput;
+            chatBox.appendChild(userMessage);
+
+            const botMessage = document.createElement("div");
+            botMessage.className = "bot-message";
+            botMessage.textContent = responseData.answer;
+            chatBox.appendChild(botMessage);
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    }
+
+    const sendButton = document.getElementById("sendButton");
+    sendButton.addEventListener("click", sendUserInput);
+</script>
+
+</body>
+</html>
